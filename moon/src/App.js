@@ -1,3 +1,4 @@
+//
 import { useState } from "react";
 
 const messages = [
@@ -7,26 +8,37 @@ const messages = [
 ];
 
 export default function App() {
+  return (
+    <div>
+      <Step />
+      <Step />
+    </div>
+  );
+}
+
+function Step() {
   const [step, setStep] = useState(1);
   const [person, setPerson] = useState({ name: "Joe" });
   const [isOpen, setIsOpen] = useState(true);
 
   function handlePrevious() {
     if (step > 1) {
-      setStep(step - 1);
+      setStep((s) => s - 1);
       setPerson({ name: "joe" });
     }
   }
   function handleNext() {
     if (step < 3) {
-      setStep(step + 1);
+      setStep((s) => s + 1);
       setPerson({ name: "Fred" });
     }
   }
 
   return (
-    <>
-      <button onClick={() => setIsOpen(!isOpen)}>x</button>
+    <div>
+      <button className="close" onClick={() => setIsOpen((is) => !is)}>
+        &times;
+      </button>
       {isOpen ? (
         <div className="steps">
           <div className="numbers">
@@ -54,6 +66,6 @@ export default function App() {
           </div>
         </div>
       ) : null}
-    </>
+    </div>
   );
 }
