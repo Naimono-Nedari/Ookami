@@ -1,17 +1,17 @@
 import { useState } from "react";
 
-const initialItems = [
-  { id: 1, description: "Passports", quantity: 2, packed: false },
-  { id: 2, description: "Socks", quantity: 12, packed: false },
-  { id: 3, description: "Bag", quantity: 11, packed: false },
-];
-
 export default function App() {
+  const [currentItems, setCurrentItems] = useState([]);
+
+  function handleAddItems(x) {
+    setCurrentItems((currentItems) => [...currentItems, x]);
+  }
+
   return (
     <div className="app">
       <Logo />
-      <Form />
-      <PackingList />
+      <Form onAddItems={handleAddItems} />
+      <PackingList currentItemsList={currentItems} />
       <Stats />
     </div>
   );
@@ -25,7 +25,7 @@ function Logo() {
   );
 }
 
-function Form() {
+function Form({ onAddItems }) {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState(1);
 
@@ -35,52 +35,64 @@ function Form() {
     const newItem = { description, quantity, packed: false, id: Date.now() };
 
     console.log(newItem);
+    onAddItems(newItem);
 
     setDescription("");
     setQuantity(1);
   }
 
   return (
-    <form className="add-form" onSubmit={(e) => handleSubmit(e)}>
+    <form className="add-form" onSubmit={handleSubmit}>
       <h3>What do you need for your 😍 trip?</h3>
-      <select
-        value={quantity}
-        onChange={(e) => setQuantity(Number(e.target.value))}
-      >
-        {Array.from({ length: 20 }, (_, i) => i + 1).map((m) => (
-          <option value={m} key={m}>
-            {m}
-          </option>
-        ))}
-      </select>
-      <input
-        type="text"
-        placeholder="Item..."
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
+      <QuantitySelector quantity={quantity} onChange={setQuantity} />
+      <DescriptionInput description={description} onChange={setDescription} />
       <button>Add</button>
     </form>
   );
 }
 
-function PackingList() {
+function QuantitySelector({ quantity, onChange }) {
+  return (
+    <select value={quantity} onChange={(e) => onChange(Number(e.target.value))}>
+      {Array.from({ length: 20 }, (_, i) => i + 1).map((m) => (
+        <option value={m} key={m}>
+          {m}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+function DescriptionInput({ description, onChange }) {
+  return (
+    <input
+      type="text"
+      placeholder="Item..."
+      value={description}
+      onChange={(e) => onChange(e.target.value)}
+    />
+  );
+}
+
+function PackingList({ currentItemsList }) {
   return (
     <div className="list">
       <ul>
-        {initialItems.map((m) => (
-          <Item props={m} key={m.id} />
+        {currentItemsList.map((m) => (
+          <Item singleItemData={m} key={m.id} />
         ))}
       </ul>
     </div>
   );
 }
 
-function Item({ props }) {
+function Item({ singleItemData }) {
   return (
     <li>
-      <span style={props.packed ? { textDecoration: "line-through" } : {}}>
-        {props.quantity} {props.description}
+      <span
+        style={singleItemData.packed ? { textDecoration: "line-through" } : {}}
+      >
+        {singleItemData.quantity} {singleItemData.description}
       </span>
       <button>❌</button>
     </li>
