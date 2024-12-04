@@ -1,4 +1,53 @@
-ごめん、なんかよくわからない。
-Array.from({ length: 20 }, (_, i) => i + 1)
+つんだ。たすけて。
+<button onClicK={() => onDeleteItems(singleItemData.id)}>❌</button>
+これ押しても消えない
 
+export default function App() {
+  const [currentItems, setCurrentItems] = useState([]);
+
+  function handleAddItems(x) {
+    setCurrentItems((currentItems) => [...currentItems, x]);
+  }
+
+  function handleDeleteItems(id) {
+    console.log(id);
+    setCurrentItems((currentItems) => currentItems.filter((x) => x.id !== id));
+  }
+
+  return (
+    <div className="app">
+      <Logo />
+      <Form onAddItems={handleAddItems} />
+      <PackingList
+        currentItemsList={currentItems}
+        onDeleteItems={handleDeleteItems}
+      />
+      <Stats />
+    </div>
+  );
+}
+
+function PackingList({ currentItemsList, onDeleteItems }) {
+  return (
+    <div className="list">
+      <ul>
+        {currentItemsList.map((m) => (
+          <Item singleItemData={m} key={m.id} onDeleteItems={onDeleteItems} />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function Item({ singleItemData, onDeleteItems }) {
+  return (
+    <li>
+      <span
+        style={singleItemData.packed ? { textDecoration: "line-through" } : {}}
+      >
+        {singleItemData.quantity} {singleItemData.description}
+      </span>
+      <button onClicK={() => onDeleteItems(singleItemData.id)}>❌</button>
+    </li>
+  );
 }

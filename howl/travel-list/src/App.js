@@ -7,11 +7,19 @@ export default function App() {
     setCurrentItems((currentItems) => [...currentItems, x]);
   }
 
+  function handleDeleteItems(id) {
+    console.log(id);
+    setCurrentItems((currentItems) => currentItems.filter((x) => x.id !== id));
+  }
+
   return (
     <div className="app">
       <Logo />
       <Form onAddItems={handleAddItems} />
-      <PackingList currentItemsList={currentItems} />
+      <PackingList
+        currentItemsList={currentItems}
+        onDeleteItems={handleDeleteItems}
+      />
       <Stats />
     </div>
   );
@@ -44,16 +52,22 @@ function Form({ onAddItems }) {
   return (
     <form className="add-form" onSubmit={handleSubmit}>
       <h3>What do you need for your 😍 trip?</h3>
-      <QuantitySelector quantity={quantity} onChange={setQuantity} />
-      <DescriptionInput description={description} onChange={setDescription} />
+      <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
+      <DescriptionInput
+        description={description}
+        setDescription={setDescription}
+      />
       <button>Add</button>
     </form>
   );
 }
 
-function QuantitySelector({ quantity, onChange }) {
+function QuantitySelector({ quantity, setQuantity }) {
   return (
-    <select value={quantity} onChange={(e) => onChange(Number(e.target.value))}>
+    <select
+      value={quantity}
+      onChange={(e) => setQuantity(Number(e.target.value))}
+    >
       {Array.from({ length: 20 }, (_, i) => i + 1).map((m) => (
         <option value={m} key={m}>
           {m}
@@ -63,30 +77,30 @@ function QuantitySelector({ quantity, onChange }) {
   );
 }
 
-function DescriptionInput({ description, onChange }) {
+function DescriptionInput({ description, setDescription }) {
   return (
     <input
       type="text"
       placeholder="Item..."
       value={description}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={(e) => setDescription(e.target.value)}
     />
   );
 }
 
-function PackingList({ currentItemsList }) {
+function PackingList({ currentItemsList, onDeleteItems }) {
   return (
     <div className="list">
       <ul>
         {currentItemsList.map((m) => (
-          <Item singleItemData={m} key={m.id} />
+          <Item singleItemData={m} key={m.id} onDeleteItems={onDeleteItems} />
         ))}
       </ul>
     </div>
   );
 }
 
-function Item({ singleItemData }) {
+function Item({ singleItemData, onDeleteItems }) {
   return (
     <li>
       <span
@@ -94,7 +108,7 @@ function Item({ singleItemData }) {
       >
         {singleItemData.quantity} {singleItemData.description}
       </span>
-      <button>❌</button>
+      <button onClick={() => onDeleteItems(singleItemData.id)}>❌</button>
     </li>
   );
 }
