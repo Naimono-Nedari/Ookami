@@ -134,12 +134,18 @@ function Stats({ currentItemsList }) {
     currentItemsNum > 0
       ? Math.round((currentItemsPackedNum / currentItemsNum) * 100)
       : 0;
+  const hasItems = currentItemsNum > 0;
+
   return (
     <footer className="stats">
-      <em>
-        💼 You have {currentItemsNum} items on your list, and you already packed{" "}
-        {currentItemsPackedPercent} %
-      </em>
+      {hasItems ? (
+        <em>
+          💼 You have {currentItemsNum} items on your list, and you already
+          packed {currentItemsPackedPercent} %
+        </em>
+      ) : (
+        <em>Add items...</em>
+      )}
     </footer>
   );
 }
