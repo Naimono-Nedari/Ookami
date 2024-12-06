@@ -116,7 +116,11 @@ function PackingList({ currentItemsList, onDeleteItems, onPackedItems }) {
 function Item({ singleItemData, onDeleteItems, onPackedItems }) {
   return (
     <li>
-      <input type="checkbox" onClick={() => onPackedItems(singleItemData.id)} />
+      <input
+        type="checkbox"
+        packed={singleItemData.packed}
+        onClick={() => onPackedItems(singleItemData.id)}
+      />
       <span
         style={singleItemData.packed ? { textDecoration: "line-through" } : {}}
       >
@@ -141,7 +145,7 @@ function Stats({ currentItemsList }) {
       {hasItems ? (
         <em>
           💼 You have {currentItemsNum} items on your list, and you already
-          packed {currentItemsPackedPercent} %
+          packed {currentItemsPackedNum} ({currentItemsPackedPercent} %)
         </em>
       ) : (
         <em>Add items...</em>
