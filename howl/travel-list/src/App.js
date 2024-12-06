@@ -12,6 +12,13 @@ export default function App() {
     setCurrentItems((currentItems) => currentItems.filter((x) => x.id !== id));
   }
 
+  function handleTogglePackedItems(id) {
+    console.log(id);
+    setCurrentItems((currentItems) =>
+      currentItems.map((x) => (x.id === id ? { ...x, packed: !x.packed } : x))
+    );
+  }
+
   return (
     <div className="app">
       <Logo />
@@ -19,8 +26,9 @@ export default function App() {
       <PackingList
         currentItemsList={currentItems}
         onDeleteItems={handleDeleteItems}
+        onPackedItems={handleTogglePackedItems}
       />
-      <Stats />
+      <Stats currentItemsList={currentItems} />
     </div>
   );
 }
@@ -88,21 +96,27 @@ function DescriptionInput({ description, setDescription }) {
   );
 }
 
-function PackingList({ currentItemsList, onDeleteItems }) {
+function PackingList({ currentItemsList, onDeleteItems, onPackedItems }) {
   return (
     <div className="list">
       <ul>
         {currentItemsList.map((m) => (
-          <Item singleItemData={m} key={m.id} onDeleteItems={onDeleteItems} />
+          <Item
+            singleItemData={m}
+            key={m.id}
+            onDeleteItems={onDeleteItems}
+            onPackedItems={onPackedItems}
+          />
         ))}
       </ul>
     </div>
   );
 }
 
-function Item({ singleItemData, onDeleteItems }) {
+function Item({ singleItemData, onDeleteItems, onPackedItems }) {
   return (
     <li>
+      <input type="checkbox" onClick={() => onPackedItems(singleItemData.id)} />
       <span
         style={singleItemData.packed ? { textDecoration: "line-through" } : {}}
       >
@@ -113,10 +127,19 @@ function Item({ singleItemData, onDeleteItems }) {
   );
 }
 
-function Stats() {
+function Stats({ currentItemsList }) {
+  const currentItemsNum = currentItemsList.length;
+  const currentItemsPackedNum = currentItemsList.filter((x) => x.packed).length;
+  const currentItemsPackedPercent =
+    currentItemsNum > 0
+      ? Math.round((currentItemsPackedNum / currentItemsNum) * 100)
+      : 0;
   return (
     <footer className="stats">
-      <em>💼 You have X items on your list, and you already packed X (X%)</em>
+      <em>
+        💼 You have {currentItemsNum} items on your list, and you already packed{" "}
+        {currentItemsPackedPercent} %
+      </em>
     </footer>
   );
 }

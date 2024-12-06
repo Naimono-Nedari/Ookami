@@ -1,17 +1,14 @@
-つんだ。たすけて。
-<button onClicK={() => onDeleteItems(singleItemData.id)}>❌</button>
-これ押しても消えない
+えーまじか。これは？
 
-export default function App() {
+
   const [currentItems, setCurrentItems] = useState([]);
 
-  function handleAddItems(x) {
-    setCurrentItems((currentItems) => [...currentItems, x]);
-  }
 
-  function handleDeleteItems(id) {
+ function handlePackedItems(id) {
     console.log(id);
-    setCurrentItems((currentItems) => currentItems.filter((x) => x.id !== id));
+    setCurrentItems((currentItems) =>
+      currentItems.map((x) => (x.id === id ? { ...x, packed: !x.packed } : x))
+    );
   }
 
   return (
@@ -21,33 +18,27 @@ export default function App() {
       <PackingList
         currentItemsList={currentItems}
         onDeleteItems={handleDeleteItems}
+        onPackedItems={handlePackedItems}
       />
       <Stats />
     </div>
   );
 }
 
-function PackingList({ currentItemsList, onDeleteItems }) {
-  return (
-    <div className="list">
-      <ul>
-        {currentItemsList.map((m) => (
-          <Item singleItemData={m} key={m.id} onDeleteItems={onDeleteItems} />
-        ))}
-      </ul>
-    </div>
-  );
-}
 
-function Item({ singleItemData, onDeleteItems }) {
+function Item({ singleItemData, onDeleteItems, onPackedItems }) {
   return (
     <li>
+      <input
+        type="checkbox"
+        onclick={() => onPackedItems(singleItemData.id)}
+      />
       <span
         style={singleItemData.packed ? { textDecoration: "line-through" } : {}}
       >
         {singleItemData.quantity} {singleItemData.description}
       </span>
-      <button onClicK={() => onDeleteItems(singleItemData.id)}>❌</button>
+      <button onClick={() => onDeleteItems(singleItemData.id)}>❌</button>
     </li>
   );
 }
