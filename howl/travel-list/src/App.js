@@ -19,6 +19,15 @@ export default function App() {
     );
   }
 
+  function handleDeleteAllItems() {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete all items?"
+    );
+    if (confirmed) {
+      setCurrentItems((currentItems) => []);
+    }
+  }
+
   return (
     <div className="app">
       <Logo />
@@ -27,6 +36,7 @@ export default function App() {
         currentItemsList={currentItems}
         onDeleteItems={handleDeleteItems}
         onPackedItems={handleTogglePackedItems}
+        onDeleteAllItems={handleDeleteAllItems}
       />
       <Stats currentItemsList={currentItems} />
     </div>
@@ -96,19 +106,67 @@ function DescriptionInput({ description, setDescription }) {
   );
 }
 
-function PackingList({ currentItemsList, onDeleteItems, onPackedItems }) {
+function PackingList({
+  currentItemsList,
+  onDeleteItems,
+  onPackedItems,
+  onDeleteAllItems,
+}) {
+  const [sortBy, setSortBy] = useState("input");
+
+  let sortedItems;
+  if (sortBy === "input") {
+    sortedItems = currentItemsList;
+  } else if (sortBy === "description") {
+    sortedItems = currentItemsList
+      .slice()
+      .sort((a, b) => a.description.localeCompare(b.description));
+  } else if (sortBy === "packed") {
+    sortedItems = currentItemsList
+      .slice()
+      .sort((a, b) => Number(a.packed) - Number(b.packed));
+  }
+
   return (
     <div className="list">
-      <ul>
-        {currentItemsList.map((m) => (
-          <Item
-            singleItemData={m}
-            key={m.id}
-            onDeleteItems={onDeleteItems}
-            onPackedItems={onPackedItems}
-          />
-        ))}
-      </ul>
+      <ItemList
+        sortedItems={sortedItems}
+        onDeleteItems={onDeleteItems}
+        onPackedItems={onPackedItems}
+      />
+      <ListActions
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        onDeleteAllItems={onDeleteAllItems}
+      />
+    </div>
+  );
+}
+
+function ItemList({ sortedItems, onDeleteItems, onPackedItems }) {
+  return (
+    <ul>
+      {sortedItems.map((m) => (
+        <Item
+          singleItemData={m}
+          key={m.id}
+          onDeleteItems={onDeleteItems}
+          onPackedItems={onPackedItems}
+        />
+      ))}
+    </ul>
+  );
+}
+
+function ListActions({ sortBy, setSortBy, onDeleteAllItems }) {
+  return (
+    <div className="actions">
+      <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+        <option value="input">Sort by input order</option>
+        <option value="description">Sort by description order</option>
+        <option value="packed">Sort by packed order</option>
+      </select>
+      <button onClick={() => onDeleteAllItems()}>Clear list</button>
     </div>
   );
 }
